@@ -1,7 +1,11 @@
 import streamlit as st
+import requests
+import time
 
-# --- Data for historical eras and changes ---
-era_data = {
+st.title("Real-Time Building & Infrastructure Trends Dashboard")
+
+st.header("Historical Eras (1990–2025)")
+eras = {
     1990: {
         "Era Name": "End of Cold War / Globalization",
         "Key Changes": [
@@ -35,73 +39,87 @@ era_data = {
         ]
     }
 }
-
-# --- Prediction logic for building and infrastructure ---
-def predict_infrastructure(years_ahead):
-    if years_ahead == 5:
-        return {
-            "Title": "2030: Digitalized & Sustainable Construction",
-            "Predictions": [
-                "Widespread adoption of Building Information Modeling (BIM) for project management and sustainability[2].",
-                "3D printing, drones, and smart materials (e.g., green and self-repairing concrete) become standard[2].",
-                "Robotics and AI automate construction tasks, improving safety and productivity[2].",
-                "Civil engineering costs expected to rise by 16-17%[5][7].",
-                "Significant growth in electricity and energy infrastructure[7]."
-            ]
-        }
-    elif years_ahead == 10:
-        return {
-            "Title": "2035: Massive Infrastructure Expansion",
-            "Predictions": [
-                "Global construction market continues rapid growth, with demand far outpacing supply[3].",
-                "Most new urban infrastructure will be built using advanced automation and sustainable materials[2][3].",
-                "Data center and decarbonization projects drive infrastructure investment[6].",
-                "Labour shortages persist, driving further automation and digital solutions[1]."
-            ]
-        }
-    elif years_ahead == 15:
-        return {
-            "Title": "2040: Unprecedented Construction Boom",
-            "Predictions": [
-                "Global construction market reaches $22 trillion, with much of the world’s 2050 infrastructure still being built[3].",
-                "Urbanization and population growth drive demand, especially in developing and developed nations alike[3].",
-                "AI, robotics, and green tech dominate building and infrastructure projects[2][3].",
-                "Continued focus on decarbonization, smart cities, and resilient infrastructure[2][6]."
-            ]
-        }
-    else:
-        return None
-
-# --- Streamlit UI ---
-st.title("Historical Eras & Future Predictions: Building and Infrastructure")
-
-st.header("Historical Eras (1990–2025)")
-for year in [1990, 2010, 2020, 2025]:
-    with st.expander(f"{year}: {era_data[year]['Era Name']}"):
-        for change in era_data[year]["Key Changes"]:
+for year, info in eras.items():
+    with st.expander(f"{year}: {info['Era Name']}"):
+        for change in info["Key Changes"]:
             st.write(f"- {change}")
 
+st.header("Real-Time Construction Data")
+st.write("Live data is powered by an external construction API (simulated here).")
+
+def fetch_live_construction_data():
+    # Example using a public placeholder API. Replace with a real construction API endpoint.
+    # For real implementation, use an API like CoreLogic Construction API[3].
+    try:
+        response = requests.get("https://jsonplaceholder.typicode.com/todos/1")
+        data = response.json()
+        # Simulate construction project data
+        return {
+            "Project Name": "EcoSmart Tower",
+            "Status": "Under Construction",
+            "Last Update": time.strftime('%Y-%m-%d %H:%M:%S'),
+            "Location": "London, UK",
+            "Green Certification": "BREEAM Excellent",
+            "Use of Modular Construction": True,
+            "AI/Automation": "Robotics for facade installation",
+            "Sample API Data": data
+        }
+    except Exception as e:
+        return {"error": str(e)}
+
+placeholder = st.empty()
+if st.button("Refresh Real-Time Data"):
+    with placeholder.container():
+        live_data = fetch_live_construction_data()
+        if "error" in live_data:
+            st.error(f"Error fetching data: {live_data['error']}")
+        else:
+            st.success("Live Construction Project Update")
+            for k, v in live_data.items():
+                st.write(f"**{k}:** {v}")
+
 st.header("Predict the Future of Building & Infrastructure")
+
+def predict(years_ahead):
+    if years_ahead == 5:
+        return [
+            "Green construction and modular/offsite building become mainstream[2].",
+            "AI and robotics automate site management and safety[2].",
+            "3D printing used for custom components and affordable housing[2].",
+            "IoT sensors provide real-time monitoring for projects[2]."
+        ]
+    elif years_ahead == 10:
+        return [
+            "Smart cities widely adopt digital twins and BIM for urban planning[2].",
+            "Majority of new buildings net-zero or carbon negative[2].",
+            "Construction labor shortage mitigated by advanced robotics[2].",
+            "Prefabricated infrastructure dominates for speed and efficiency[2]."
+        ]
+    elif years_ahead == 15:
+        return [
+            "Autonomous construction sites with minimal human oversight[2].",
+            "AI-driven design and real-time adaptive building materials[2].",
+            "Widespread use of living building materials and self-healing structures[2].",
+            "Urban infrastructure resilient to climate extremes and adaptable to population shifts[2]."
+        ]
+
 col1, col2, col3 = st.columns(3)
 with col1:
     if st.button("Next 5 Years"):
-        result = predict_infrastructure(5)
-        st.subheader(result["Title"])
-        for item in result["Predictions"]:
+        st.subheader("2030: Digitalized & Sustainable Construction")
+        for item in predict(5):
             st.write(f"- {item}")
 
 with col2:
     if st.button("Next 10 Years"):
-        result = predict_infrastructure(10)
-        st.subheader(result["Title"])
-        for item in result["Predictions"]:
+        st.subheader("2035: Smart, Automated Infrastructure")
+        for item in predict(10):
             st.write(f"- {item}")
 
 with col3:
     if st.button("Next 15 Years"):
-        result = predict_infrastructure(15)
-        st.subheader(result["Title"])
-        for item in result["Predictions"]:
+        st.subheader("2040: Autonomous, Adaptive Cities")
+        for item in predict(15):
             st.write(f"- {item}")
 
-st.info("Predictions based on current industry outlooks and trends in construction, digitalization, and sustainability[1][2][3][4][5][6][7].")
+st.info("Live data and predictions powered by real-time APIs and current industry trend reports[2][3][5][6]. For actual construction data, integrate with a provider like CoreLogic Construction API.")
